@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CSV Smart Dashboard</title>
+  </head>
+  <body class="bg-slate-50 font-sans text-slate-900 min-h-screen p-6 md:p-10">
+    <div class="mx-auto max-w-7xl">
+      <!-- Header -->
+      <header class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-3xl font-bold tracking-tight text-slate-900 flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+            Smart CSV Analytics
+          </h1>
+          <p class="text-slate-500 mt-1">Upload your data to instantly generate insights.</p>
+        </div>
+        <div class="relative">
+          <input type="file" id="csv-file" accept=".csv" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+          <button class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium transition-colors shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg>
+            Upload CSV File
+          </button>
+        </div>
+      </header>
+
+      <!-- Drop Zone -->
+      <div id="drop-zone" class="flex flex-col items-center justify-center h-[400px] rounded-2xl border-2 border-dashed border-slate-300 bg-white transition-all duration-200">
+        <div id="drop-icon-container" class="p-4 rounded-full mb-4 bg-slate-100 text-slate-400">
+          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2"/><path d="M8 17h2"/><path d="M14 13h2"/><path d="M14 17h2"/></svg>
+        </div>
+        <h3 class="text-xl font-semibold text-slate-700 mb-2">Drag & Drop your CSV here</h3>
+        <p class="text-slate-500 max-w-md text-center">We'll automatically analyze your columns and generate the most appropriate visualizations for your data.</p>
+      </div>
+
+      <!-- Dashboard Content -->
+      <div id="dashboard-content" class="hidden">
+        <!-- Summary Stats -->
+        <div id="summary-stats" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"></div>
+        
+        <!-- Charts Grid -->
+        <div id="charts-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12"></div>
+        
+        <!-- Advanced Analytics -->
+        <div id="advanced-analytics" class="mt-12 border-t border-slate-200 pt-10 hidden">
+          <h2 class="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-3 mb-8">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600"><rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/></svg>
+            Advanced Analytics
+          </h2>
+          <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+            <!-- Correlation Matrix -->
+            <div id="corr-matrix-container" class="hidden bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+              <h3 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-500"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><line x1="8" y1="4" x2="8" y2="20"/><line x1="16" y1="4" x2="16" y2="20"/><line x1="4" y1="8" x2="20" y2="8"/><line x1="4" y1="16" x2="20" y2="16"/></svg>
+                Correlation Matrix
+              </h3>
+              <div class="overflow-x-auto">
+                <div id="corr-matrix-grid" class="grid gap-1 min-w-max"></div>
+              </div>
+              <p class="text-xs text-slate-500 mt-4 text-center">Blue = Positive Correlation | Red = Negative Correlation | Darker = Stronger</p>
+            </div>
+            
+            <!-- Scatter Plot -->
+            <div id="scatter-container" class="hidden bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col">
+              <h3 class="text-lg font-semibold text-slate-800 mb-2 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-500"><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="18.5" cy="5.5" r=".5" fill="currentColor"/><circle cx="11.5" cy="11.5" r=".5" fill="currentColor"/><circle cx="7.5" cy="16.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="14.5" r=".5" fill="currentColor"/><path d="M3 3v18h18"/></svg>
+                Highest Correlation Pair
+              </h3>
+              <p id="scatter-title" class="text-sm text-slate-500 mb-6"></p>
+              <div class="relative flex-grow min-h-[300px] w-full">
+                <canvas id="scatter-chart"></canvas>
+              </div>
+            </div>
+            
+            <!-- Stats Table -->
+            <div id="stats-table-container" class="hidden bg-white rounded-2xl p-6 border border-slate-200 shadow-sm xl:col-span-2">
+              <h3 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-500"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                Numerical Summary Statistics
+              </h3>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-slate-600">
+                  <thead class="text-xs text-slate-500 uppercase bg-slate-50 border-b border-slate-200">
+                    <tr>
+                      <th class="px-6 py-3 font-semibold">Column</th>
+                      <th class="px-6 py-3 font-semibold text-right">Mean</th>
+                      <th class="px-6 py-3 font-semibold text-right">Median</th>
+                      <th class="px-6 py-3 font-semibold text-right">Min</th>
+                      <th class="px-6 py-3 font-semibold text-right">Max</th>
+                      <th class="px-6 py-3 font-semibold text-right">Std Dev</th>
+                    </tr>
+                  </thead>
+                  <tbody id="stats-table-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/script.js"></script>
+  </body>
+</html>
+
